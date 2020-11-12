@@ -5,10 +5,10 @@ date: "23 Sep 2020"
 output: html_notebook
 ---
 
-The intention of this anaylsis is to try to determine how many students will be in MA132 (Calculus II) in the upcoming semester.
+The intention of this anaylsis is to try to predict how many students will be in MA132 (Calculus II) in the upcoming year.
 
 
-# Load packages
+Loading packages
 ```{r}
 library(tidyverse)
 library(janitor)
@@ -17,43 +17,48 @@ library(skimr)
 library(summarytools)
 ```
 
+Reading the data from an excel file that is stored in the data folder.
 
-# Read the data
 ```{r}
-dfa = read_excel("~/DS241/CU_ACAD_DEPT_ENRL.xlsx") %>%
+dfa = read_excel("../Data/CU_ACAD_DEPT_ENRL.xls") %>%
 clean_names()
 ```
 
+Quick summary of the data available
 
-
-# Summary of data
 ```{r}
-#skim(dfa)
-# c = dfa %>% group_by(subject)
-# skim(c)
-# dfa %>% dfSummary()
+skim(dfa)
 ```
 
+Tidying the data
 
-# Tidy data
 ```{r}
 dfb = dfa %>%
   separate(col = term2, into = c("semester","year"), sep = " ")
 ```
 
+Cleaning and organizing the data that is required to complete this analysis
 
-# Cleaning the data. 
+dfc1 will contain the data for calculus 1 and dfc2 will contain the data from calculus 2.
+
 ```{r}
-dfc = dfb %>%
-  select(-c(acad_org,current_status,instructor,course_id)) %>%
-  filter(subject == "MA", catalog == "131"|catalog == "132") %>%
-  filter(component == "LEC") %>%
+# dfc1 = dfb %>%
+#   select(-c(section, term, acad_org,current_status,instructor,course_id)) %>%
+#   filter(title == "Calculus I", component == "LEC", year < 2021) %>%
+#   unique()
+
+dfc2 = dfb %>%
+  select(-c(section, term, acad_org,current_status,instructor,course_id)) %>%
+  filter(title == "Calculus II", component == "LEC", year < 2021) %>%
   unique() %>%
-  group_by(title, semester, year) 
-
-# df = dfc %>%
-#   filter(tot_enrl_overall = sum(tot_enrlcase_when(catalog == "131"))
-
-  summarise(dfc,
-            tot_enrl = sum(tot_enrl))
+  group_by(title, semester, year)
+summarise(dfc2, tot_enrl = sum(tot_enrl))
 ```
+
+Visualizing the data to see what factors might contribute to the classes enrollment
+
+```{r}
+dfc2 %>%
+  ggplot(aes(x = year, y = tot_enrl)) + geom_point()
+```
+
