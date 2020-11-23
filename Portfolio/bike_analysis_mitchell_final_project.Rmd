@@ -38,7 +38,7 @@ Read the data:
 We read the original .csv file and add in the variables new variables 'duration_min', 'hour_of_day', and 'day of week' with mutate.
 
 ```{r}
-dfa = read_csv("../data_raw/201808-capitalbikeshare-tripdata.csv") %>%
+dfa = read_csv("../Data/201808-capitalbikeshare-tripdata.csv") %>%
   clean_names() %>%
   mutate(duration = as.numeric(end_date - start_date),
          hour_of_day = hour(start_date),
@@ -54,7 +54,7 @@ skim(dfa)
 As you can see from the above summary, there are no longitude and latitude points unlike the August 2020 data that we were considering exploring. As a solution we will be joining those two dataframes together to get the coordinates into the 2018 dataframe.
 
 ```{r}
-dfcoord = read_csv("../data_raw/202008-capitalbikeshare-tripdata.csv") %>%
+dfcoord = read_csv("../Data/202008-capitalbikeshare-tripdata.csv") %>%
   clean_names()
 
 dfa$start_lat <- dfcoord$start_lat[match(dfa$start_station, dfcoord$start_station_name)]
