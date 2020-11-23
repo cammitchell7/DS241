@@ -48,17 +48,37 @@ dfc1 will contain the data for calculus 1 and dfc2 will contain the data from ca
 #   unique()
 
 dfc2 = dfb %>%
-  select(-c(section, term, acad_org,current_status,instructor,course_id)) %>%
+  select(-c(section, term, acad_org,current_status,course_id)) %>%
   filter(title == "Calculus II", component == "LEC", year < 2021) %>%
   unique() %>%
   group_by(title, semester, year)
 summarise(dfc2, tot_enrl = sum(tot_enrl))
 ```
 
-Visualizing the data to see what factors might contribute to the classes enrollment
+Lets try to see if there are any trends we can see any trends with the data that we have.
 
 ```{r}
 dfc2 %>%
-  ggplot(aes(x = year, y = tot_enrl)) + geom_point()
+  filter(semester == "Spring") %>%
+  group_by(year) %>%
+  summarise(tot_enrl = sum(tot_enrl)) %>%
+  ggplot(aes(x = year, y = tot_enrl)) + geom_point() + ggtitle("Spring Semesters")
+```
+```{r}
+dfc2 %>%
+  filter(semester == "Fall") %>%
+  group_by(year) %>%
+  summarise(tot_enrl = sum(tot_enrl)) %>%
+  ggplot(aes(x = year, y = tot_enrl)) + geom_point() + ggtitle("Fall Semesters")
+```
+It seems as if there is no general increase or decrease of enrollment over this span of time.
+
+I do not believe that looking at the professors will help solve the question of how many students will enroll in a math course but out of my  own curiosity I am going to investigate it.
+```{r}
+dfteacher = dfc2 %>%
+  group_by(instructor) %>%
+  summarise(tot_enrl = sum(tot_enrl))
+dfteacher[order(-dfteacher$tot_enrl),]
 ```
 
+I do not believe there is enough relevant data here to accurately predict how many students will be enrolled in the next year.
