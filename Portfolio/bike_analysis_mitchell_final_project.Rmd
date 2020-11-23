@@ -1,7 +1,6 @@
 ---
 title: "Analysis of bikeshare data"
 subtitle: "DS241 Final Project"
-
 author: "Cameron Mitchell"
 date: "11/13/2020"
 output: html_notebook
