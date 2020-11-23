@@ -26,7 +26,6 @@ library(lubridate)
 
 ## Data
 
-I am **not** using the file that (a) started on moodle for which we,  (b) computed a couple of extra variables (for duration, hour of day, and day of week), and (c) saved as .xlsx file.  
 
 The orginal source of the data was the csv file 
 
@@ -34,24 +33,19 @@ https://s3.amazonaws.com/capitalbikeshare-data/202008-capitalbikeshare-tripdata.
 
 so I will use that original source data so that my research is more *reproducible*.
 
->Note 1: My variable names might be different than yours.  Be careful to think through what I am doing and use it as a template.
-
-
-
 
 ### Read the data
 
-I read the original .csv file and add in the variables (mutate) that we did manually when we played with the creation of the data table.   I will call these new variables: `duration_min`, `hour_of_day`.  Also I will add `day of week`, but it won't match the format from excel.
+I read the original .csv file and add in the variables  `duration`, `hour_of_day`, and `day_of_week`.
 
 ```{r}
-dfa= read_csv("202008-capitalbikeshare-tripdata.csv") %>% 
+dfa= read_csv("../Data/202008-capitalbikeshare-tripdata.csv") %>% 
   clean_names() %>%
   mutate(duration=as.numeric((ended_at-started_at)/60),
          hour_of_day=hour(started_at),
          day_of_week=wday(started_at,label = T))
   
 ```
-
 
 We summarize that dataframe to identify data types, missing data, et cetera.
 
@@ -70,8 +64,6 @@ dfa %>% filter(duration<100,duration>0) %>%
 
 
 ### Cleaning
-
-Before we do further analysis, we recognize that if the duration is negative, some piece of the time data is corrupt.  Although it sill reduce the size of our dataset, it is very much large enough to permit continued analysis even after removing those rows.
 
 Limit to durations that are positive.
 
@@ -97,6 +89,17 @@ dfc = merge(dfstart, dfend) %>%
   filter(!is.na(station)) %>%
   mutate(net_gain = start_num - end_num)
 ```
+The code below is just another way of getting a similar dataframe that I might want.
+```{r}
+dfriders = dfb %>%
+  pivot_longer(started_at:ended_at, names_to="type",values_to="t") %>% arrange(t) %>%
+  mutate(increment=case_when(
+   type=="start_date"~1,
+   type=="end_date" ~ -1)) %>%
+  mutate(riders=cumsum(increment)) %>%
+  group_by(station = start_station_id) %>%
+  summarise(start_num = n())
+```
 
 ### Visualization
 
@@ -107,5 +110,3 @@ dfc %>% ggplot(aes(x = net_gain)) + geom_histogram()
 ```
 
 This is the only graph that I could think of creating with dfc and it shows that most of the stations have a net_gain around zero with a few drastic outliers
-
-
