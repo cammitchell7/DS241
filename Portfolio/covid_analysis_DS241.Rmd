@@ -2,10 +2,7 @@
 title: "Cumulative deaths from COVID-19"
 author: "Cameron Mitchell"
 date: "October"
-output: 
-  html_document: 
-    toc: yes
-    toc_float: yes
+output: html_notebook
 ---
 
 ## Introduction
@@ -107,13 +104,13 @@ as_of_date <- country_data %>%
 as_of_date_formatted <- glue("{wday(as_of_date, label = TRUE)}, {month(as_of_date, label = TRUE)} {day(as_of_date)}, {year(as_of_date)}")
 ```
 
-These data are as of `r as_of_date_formatted`.
+These data are as of r as_of_date_formatted.
 
 ## Visualisation
 
 The following visualisation shows the number of cumulative cases vs. days elapsed since the 10th confirmed death in each country. The time span plotted for each country varies since some countries started seeing (and reporting) deaths from COVID-19 much later than others.
 
-```{r visualise, warning=FALSE}
+```{r}
 ggplot(data = country_data,
        mapping = aes(x = days_elapsed, 
                      y = cumulative_cases, 
